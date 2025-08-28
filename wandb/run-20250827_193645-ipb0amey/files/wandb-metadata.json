@@ -1,0 +1,21 @@
+{
+  "os": "Linux-6.8.0-65-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.11.12",
+  "startedAt": "2025-08-27T15:36:45.954962Z",
+  "args": [
+    "--local_rank=0",
+    "config/train_gpt2_deepspeed_zero2.py"
+  ],
+  "program": "/data/yaxin/pretrain_data_analysis/train_deepspeed.py",
+  "codePath": "train_deepspeed.py",
+  "codePathLocal": "train_deepspeed.py",
+  "git": {
+    "remote": "https://github.com/karpathy/nanoGPT.git",
+    "commit": "93a43d9a5c22450bbf06e78da2cb6eeef084b717"
+  },
+  "email": "s215161@dtu.dk",
+  "root": "/data/yaxin/pretrain_data_analysis",
+  "host": "asus-ESC8000A-E12",
+  "executable": "/data/yaxin/pretrain_data_analysis/.venv/bin/python3",
+  "writerId": "w6voixlvc8iqia10s9d7asy1gm2rxvb0"
+}

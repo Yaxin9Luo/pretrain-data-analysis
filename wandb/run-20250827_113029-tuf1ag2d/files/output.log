@@ -1,0 +1,30 @@
+step 0: train loss 10.9769, val loss 10.9786
+iter 0: loss 10.9824, time 88861.16ms, mfu -100.00%
+iter 10: loss 10.2273, time 2725.61ms, mfu 27.98%, ETA: 80d 13h, progress: 0.0%
+iter 20: loss 9.6660, time 2750.29ms, mfu 27.95%, ETA: 49d 19h, progress: 0.0%
+iter 30: loss 9.4181, time 2767.28ms, mfu 27.91%, ETA: 39d 14h, progress: 0.0%
+iter 40: loss 9.1819, time 2804.11ms, mfu 27.84%, ETA: 34d 13h, progress: 0.0%
+iter 50: loss 8.9778, time 2836.73ms, mfu 27.74%, ETA: 31d 13h, progress: 0.0%
+iter 60: loss 8.8489, time 2844.82ms, mfu 27.65%, ETA: 29d 14h, progress: 0.0%
+Traceback (most recent call last):
+  File "/data/yaxin/pretrain_data_analysis/train.py", line 379, in <module>
+    scaler.scale(loss).backward()
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_tensor.py", line 626, in backward
+    torch.autograd.backward(
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/graph.py", line 823, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/train.py", line 379, in <module>
+[rank0]:     scaler.scale(loss).backward()
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_tensor.py", line 626, in backward
+[rank0]:     torch.autograd.backward(
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/__init__.py", line 347, in backward
+[rank0]:     _engine_run_backward(
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/graph.py", line 823, in _engine_run_backward
+[rank0]:     return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: KeyboardInterrupt

@@ -1,0 +1,5 @@
+
+=== Pipeline Parallel Model Stats ===
+Total stages: 4
+Device map: [0, 1, 2, 3]
+Stage 0: 6 layer

@@ -1,0 +1,4 @@
+step 0: train loss 10.9987, val loss 10.9994
+iter 0: loss 11.0000, time 15662.73ms
+step 5: train loss 10.9991, val loss 11.0000 | ETA: 0m 31s (2025-08-27 19:41:06) | Progress: 50.0%
+saving checkpoint to out

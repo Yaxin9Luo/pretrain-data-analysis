@@ -1,0 +1,21 @@
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_setup.py:_flush():80] Current SDK version is 0.21.1
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_setup.py:_flush():80] Configure stats pid to 352399
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_setup.py:_flush():80] Loading settings from /home/yaxin/.config/wandb/settings
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_setup.py:_flush():80] Loading settings from /data/yaxin/pretrain_data_analysis/wandb/settings
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /data/yaxin/pretrain_data_analysis/wandb/run-20250827_190824-rtlrp9fx/logs/debug.log
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /data/yaxin/pretrain_data_analysis/wandb/run-20250827_190824-rtlrp9fx/logs/debug-internal.log
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_init.py:init():830] calling init triggers
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
+config: {'out_dir': 'out', 'eval_interval': 1000, 'log_interval': 10, 'eval_iters': 200, 'eval_only': False, 'always_save_checkpoint': True, 'init_from': 'scratch', 'wandb_log': True, 'wandb_project': 'pretrain-data-analysis', 'wandb_run_name': 'pipeline-gpt2-124M', 'dataset': 'openwebtext', 'gradient_accumulation_steps': 48, 'batch_size': 16, 'block_size': 1024, 'n_layer': 12, 'n_head': 12, 'n_embd': 768, 'dropout': 0.0, 'bias': False, 'use_pipeline_parallel': True, 'pipeline_stages': 4, 'pipeline_micro_batches': 8, 'pipeline_partition_method': 'uniform', 'learning_rate': 0.0006, 'max_iters': 600000, 'weight_decay': 0.1, 'beta1': 0.9, 'beta2': 0.95, 'grad_clip': 1.0, 'decay_lr': True, 'warmup_iters': 2000, 'lr_decay_iters': 600000, 'min_lr': 6e-05, 'device': 'cuda', 'dtype': 'bfloat16', 'compile': True, 'activation_checkpointing': True, 'backend': 'nccl', '_wandb': {}}
+2025-08-27 19:08:24,651 INFO    MainThread:352399 [wandb_init.py:init():871] starting backend
+2025-08-27 19:08:24,856 INFO    MainThread:352399 [wandb_init.py:init():874] sending inform_init request
+2025-08-27 19:08:24,861 INFO    MainThread:352399 [wandb_init.py:init():882] backend started and connected
+2025-08-27 19:08:24,862 INFO    MainThread:352399 [wandb_init.py:init():953] updated telemetry
+2025-08-27 19:08:24,866 INFO    MainThread:352399 [wandb_init.py:init():977] communicating run to backend with 90.0 second timeout
+2025-08-27 19:08:25,606 INFO    MainThread:352399 [wandb_init.py:init():1029] starting run threads in backend
+2025-08-27 19:08:25,717 INFO    MainThread:352399 [wandb_run.py:_console_start():2494] atexit reg
+2025-08-27 19:08:25,717 INFO    MainThread:352399 [wandb_run.py:_redirect():2342] redirect: wrap_raw
+2025-08-27 19:08:25,717 INFO    MainThread:352399 [wandb_run.py:_redirect():2411] Wrapping output streams.
+2025-08-27 19:08:25,717 INFO    MainThread:352399 [wandb_run.py:_redirect():2434] Redirects installed.
+2025-08-27 19:08:25,718 INFO    MainThread:352399 [wandb_init.py:init():1075] run started, returning control to user process

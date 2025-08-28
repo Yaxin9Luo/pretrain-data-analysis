@@ -1,0 +1,21 @@
+
+=== Pipeline Parallel Model Stats ===
+Total stages: 4
+Device map: [0, 1, 2, 3]
+Stage 0: 6 layers, 60,658,176 parameters
+  -> First stage (includes embeddings)
+Stage 1: 3 layers, 21,238,272 parameters
+Stage 2: 3 layers, 21,238,272 parameters
+Stage 3: 5 layers, 59,872,512 parameters
+  -> Last stage (includes output head)
+========================================
+Starting pipeline parallel training...
+Rank 0: Created dummy input with shape torch.Size([16, 1024])
+Rank 0: Forward pass successful, output type: <class 'torch.Tensor'>
+Rank 0: Pipeline validation complete
+Note: Using simplified evaluation for pipeline parallel training
+step 0: train loss 2.5000, val loss 2.8000
+iter 0: loss 0.0000, time 3549.71ms, mfu -100.00%
+iter 10: loss 0.0000, time 415.15ms, mfu 4251480.32%
+iter 20: loss 0.0000, time 418.82ms, mfu 4247760.41%
+iter 30: loss 0.0000, time 419.59ms, mfu 4243631.37%

@@ -1,0 +1,239 @@
+step 0: train loss 10.9886, val loss 10.9897
+iter 0: loss 10.9933, time 24505.71ms, mfu -100.00%
+iter 10: loss 10.3076, time 695.56ms, mfu 24.20%, ETA: 21d 20h, progress: 0.0%
+iter 20: loss 9.7335, time 693.79ms, mfu 24.21%, ETA: 13d 8h, progress: 0.0%
+iter 30: loss 9.4674, time 700.89ms, mfu 24.19%, ETA: 10d 12h, progress: 0.0%
+iter 40: loss 9.1558, time 699.86ms, mfu 24.17%, ETA: 9d 2h, progress: 0.0%
+iter 50: loss 8.9413, time 704.32ms, mfu 24.15%, ETA: 8d 6h, progress: 0.0%
+iter 60: loss 8.8003, time 710.28ms, mfu 24.10%, ETA: 7d 16h, progress: 0.0%
+iter 70: loss 8.5044, time 712.18ms, mfu 24.05%, ETA: 7d 7h, progress: 0.0%
+iter 80: loss 8.3635, time 702.97ms, mfu 24.04%, ETA: 7d 0h, progress: 0.0%
+iter 90: loss 8.1171, time 715.01ms, mfu 23.99%, ETA: 6d 18h, progress: 0.0%
+iter 100: loss 7.9683, time 710.64ms, mfu 23.96%, ETA: 6d 14h, progress: 0.0%
+iter 110: loss 7.9509, time 725.70ms, mfu 23.89%, ETA: 6d 10h, progress: 0.0%
+iter 120: loss 7.5540, time 717.12ms, mfu 23.84%, ETA: 6d 7h, progress: 0.0%
+iter 130: loss 7.3099, time 719.59ms, mfu 23.80%, ETA: 6d 5h, progress: 0.0%
+iter 140: loss 7.3427, time 712.77ms, mfu 23.78%, ETA: 6d 3h, progress: 0.0%
+iter 150: loss 6.9725, time 703.38ms, mfu 23.80%, ETA: 6d 1h, progress: 0.0%
+iter 160: loss 6.8383, time 708.46ms, mfu 23.79%, ETA: 5d 23h, progress: 0.0%
+iter 170: loss 6.8966, time 719.78ms, mfu 23.75%, ETA: 5d 22h, progress: 0.0%
+iter 180: loss 6.8557, time 720.28ms, mfu 23.71%, ETA: 5d 21h, progress: 0.0%
+iter 190: loss 6.7562, time 721.32ms, mfu 23.68%, ETA: 5d 20h, progress: 0.0%
+iter 200: loss 6.5693, time 731.33ms, mfu 23.61%, ETA: 5d 19h, progress: 0.0%
+iter 210: loss 6.6628, time 744.69ms, mfu 23.51%, ETA: 5d 18h, progress: 0.0%
+iter 220: loss 6.2863, time 733.99ms, mfu 23.45%, ETA: 5d 17h, progress: 0.0%
+iter 230: loss 6.3748, time 724.81ms, mfu 23.43%, ETA: 5d 16h, progress: 0.0%
+Traceback (most recent call last):
+  File "/data/yaxin/pretrain_data_analysis/train.py", line 374, in <module>
+    logits, loss = model(X, Y)
+                   ^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1643, in forward
+    else self._run_ddp_forward(*inputs, **kwargs)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1459, in _run_ddp_forward
+    return self.module(*inputs, **kwargs)  # type: ignore[index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 574, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/model.py", line 170, in forward
+    def forward(self, idx, targets=None):
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/fx/graph_module.py", line 822, in call_wrapped
+    return self._wrapped_call(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/fx/graph_module.py", line 387, in __call__
+    return super(self.cls, obj).__call__(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<eval_with_key>.243", line 91, in forward
+    submod_3 = self.compiled_submod_3(getitem_4, l_self_modules_transformer_modules_h_modules_2_modules_attn_modules_c_attn_parameters_weight_, l_self_modules_transformer_modules_h_modules_2_modules_attn_modules_c_proj_parameters_weight_, getitem_5, l_self_modules_transformer_modules_h_modules_2_modules_ln_2_parameters_weight_, l_self_modules_transformer_modules_h_modules_2_modules_mlp_modules_c_fc_parameters_weight_, l_self_modules_transformer_modules_h_modules_2_modules_mlp_modules_c_proj_parameters_weight_, l_self_modules_transformer_modules_h_modules_3_modules_ln_1_parameters_weight_);  getitem_4 = l_self_modules_transformer_modules_h_modules_2_modules_attn_modules_c_attn_parameters_weight_ = l_self_modules_transformer_modules_h_modules_2_modules_attn_modules_c_proj_parameters_weight_ = getitem_5 = l_self_modules_transformer_modules_h_modules_2_modules_ln_2_parameters_weight_ = l_self_modules_transformer_modules_h_modules_2_modules_mlp_modules_c_fc_parameters_weight_ = l_self_modules_transformer_modules_h_modules_2_modules_mlp_modules_c_proj_parameters_weight_ = l_self_modules_transformer_modules_h_modules_3_modules_ln_1_parameters_weight_ = None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/backends/distributed.py", line 153, in forward
+    x = self.submod(*args)
+        ^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/aot_autograd.py", line 1184, in forward
+    return compiled_fn(full_args)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 310, in runtime_wrapper
+    all_outs = call_func_at_runtime_with_args(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 126, in call_func_at_runtime_with_args
+    out = normalize_as_list(f(args))
+                            ^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 100, in g
+    return f(*args)
+           ^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/function.py", line 575, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 1585, in forward
+    fw_outs = call_func_at_runtime_with_args(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 126, in call_func_at_runtime_with_args
+    out = normalize_as_list(f(args))
+                            ^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 581, in wrapper
+    return compiled_fn(runtime_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 490, in wrapper
+    return compiled_fn(runtime_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 672, in inner_fn
+    outs = compiled_fn(args)
+           ^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_inductor/output_code.py", line 466, in __call__
+    return self.current_callable(inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_inductor/utils.py", line 2128, in run
+    return model(new_inputs)
+           ^^^^^^^^^^^^^^^^^
+  File "/tmp/torchinductor_yaxin/hw/chwssfu4et4zpszk345jihuxq6feoeq2v7czcxp3lsemdzvocfdq.py", line 448, in call
+    extern_kernels.mm(reinterpret_tensor(buf4, (12288, 768), (768, 1), 0), buf9, out=buf10)
+KeyboardInterrupt
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/train.py", line 374, in <module>
+[rank0]:     logits, loss = model(X, Y)
+[rank0]:                    ^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1643, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1459, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 574, in _fn
+[rank0]:     return fn(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/model.py", line 170, in forward
+[rank0]:     def forward(self, idx, targets=None):
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+[rank0]:     return fn(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/fx/graph_module.py", line 822, in call_wrapped
+[rank0]:     return self._wrapped_call(self, *args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/fx/graph_module.py", line 387, in __call__
+[rank0]:     return super(self.cls, obj).__call__(*args, **kwargs)  # type: ignore[misc]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "<eval_with_key>.243", line 91, in forward
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/backends/distributed.py", line 153, in forward
+[rank0]:     x = self.submod(*args)
+[rank0]:         ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+[rank0]:     return fn(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/aot_autograd.py", line 1184, in forward
+[rank0]:     return compiled_fn(full_args)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 310, in runtime_wrapper
+[rank0]:     all_outs = call_func_at_runtime_with_args(
+[rank0]:                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 126, in call_func_at_runtime_with_args
+[rank0]:     out = normalize_as_list(f(args))
+[rank0]:                             ^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 100, in g
+[rank0]:     return f(*args)
+[rank0]:            ^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/autograd/function.py", line 575, in apply
+[rank0]:     return super().apply(*args, **kwargs)  # type: ignore[misc]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 1585, in forward
+[rank0]:     fw_outs = call_func_at_runtime_with_args(
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/utils.py", line 126, in call_func_at_runtime_with_args
+[rank0]:     out = normalize_as_list(f(args))
+[rank0]:                             ^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 581, in wrapper
+[rank0]:     return compiled_fn(runtime_args)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 490, in wrapper
+[rank0]:     return compiled_fn(runtime_args)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 672, in inner_fn
+[rank0]:     outs = compiled_fn(args)
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_inductor/output_code.py", line 466, in __call__
+[rank0]:     return self.current_callable(inputs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/GRPO-Zero/.venv/lib/python3.11/site-packages/torch/_inductor/utils.py", line 2128, in run
+[rank0]:     return model(new_inputs)
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/tmp/torchinductor_yaxin/hw/chwssfu4et4zpszk345jihuxq6feoeq2v7czcxp3lsemdzvocfdq.py", line 448, in call
+[rank0]:     extern_kernels.mm(reinterpret_tensor(buf4, (12288, 768), (768, 1), 0), buf9, out=buf10)
+[rank0]: KeyboardInterrupt

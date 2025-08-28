@@ -1,0 +1,165 @@
+_wandb:
+    value:
+        cli_version: 0.21.1
+        e:
+            pk3f3bdh1qbcw8s2ilk6ibifcyjxfl77:
+                args:
+                    - --local_rank=0
+                    - config/train_gpt2_deepspeed_zero2.py
+                    - --max_iters=10
+                    - --eval_interval=5
+                codePath: train_deepspeed.py
+                codePathLocal: train_deepspeed.py
+                cpu_count: 64
+                cpu_count_logical: 128
+                cudaVersion: "12.4"
+                disk:
+                    /:
+                        total: "3778773131264"
+                        used: "2788624515072"
+                email: s215161@dtu.dk
+                executable: /data/yaxin/pretrain_data_analysis/.venv/bin/python3
+                git:
+                    commit: 93a43d9a5c22450bbf06e78da2cb6eeef084b717
+                    remote: https://github.com/karpathy/nanoGPT.git
+                gpu: NVIDIA RTX 6000 Ada Generation
+                gpu_count: 8
+                gpu_nvidia:
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-af9b670e-bdc6-0131-4a59-4c52c1631db9
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-298eef47-8331-04b1-e5f6-ceb5ffe9cbc3
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-7e510b5a-7aa8-8a13-f0c7-70aff141e294
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-13c37068-30bf-5870-f568-e79faea771d4
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-49819571-ae23-152b-9151-8a6e69e39c0a
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-397c0cb4-7346-1e65-a710-7f580df98d33
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-32ae5280-d173-279a-49ea-fbbb8845f2e7
+                    - architecture: Ada
+                      cudaCores: 18176
+                      memoryTotal: "48305799168"
+                      name: NVIDIA RTX 6000 Ada Generation
+                      uuid: GPU-f8e52348-3266-836b-ed18-128d975ac79a
+                host: asus-ESC8000A-E12
+                memory:
+                    total: "1623025856512"
+                os: Linux-6.8.0-65-generic-x86_64-with-glibc2.35
+                program: /data/yaxin/pretrain_data_analysis/train_deepspeed.py
+                python: CPython 3.11.12
+                root: /data/yaxin/pretrain_data_analysis
+                startedAt: "2025-08-27T15:56:39.919371Z"
+                writerId: pk3f3bdh1qbcw8s2ilk6ibifcyjxfl77
+        m: []
+        python_version: 3.11.12
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+            "2":
+                - 1
+                - 11
+                - 49
+            "3":
+                - 13
+                - 16
+            "4": 3.11.12
+            "5": 0.21.1
+            "6": 4.55.4
+            "12": 0.21.1
+            "13": linux-x86_64
+DEEPSPEED_AVAILABLE:
+    value: true
+always_save_checkpoint:
+    value: true
+backend:
+    value: nccl
+batch_size:
+    value: 12
+beta1:
+    value: 0.9
+beta2:
+    value: 0.95
+bias:
+    value: false
+block_size:
+    value: 1024
+compile:
+    value: false
+dataset:
+    value: openwebtext
+decay_lr:
+    value: true
+device:
+    value: cuda
+dropout:
+    value: 0
+dtype:
+    value: bfloat16
+eval_interval:
+    value: 5
+eval_iters:
+    value: 200
+eval_only:
+    value: false
+grad_clip:
+    value: 1
+gradient_accumulation_steps:
+    value: 40
+init_from:
+    value: scratch
+learning_rate:
+    value: 0.0006
+log_interval:
+    value: 10
+lr_decay_iters:
+    value: 600000
+max_iters:
+    value: 10
+min_lr:
+    value: 6e-05
+n_embd:
+    value: 768
+n_head:
+    value: 12
+n_layer:
+    value: 12
+out_dir:
+    value: out
+use_deepspeed:
+    value: true
+wandb_log:
+    value: true
+wandb_project:
+    value: pretrain-data-analysis
+wandb_run_name:
+    value: gpt2-124M-deepspeed-zero2
+warmup_iters:
+    value: 2000
+weight_decay:
+    value: 0.1

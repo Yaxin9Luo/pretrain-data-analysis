@@ -1,0 +1,6 @@
+{"time":"2025-08-27T19:08:24.863706965+04:00","level":"INFO","msg":"stream: starting","core version":"0.21.1"}
+{"time":"2025-08-27T19:08:25.269451711+04:00","level":"INFO","msg":"stream: created new stream","id":"rtlrp9fx"}
+{"time":"2025-08-27T19:08:25.269525802+04:00","level":"INFO","msg":"stream: started","id":"rtlrp9fx"}
+{"time":"2025-08-27T19:08:25.269654516+04:00","level":"INFO","msg":"handler: started","stream_id":"rtlrp9fx"}
+{"time":"2025-08-27T19:08:25.26964376+04:00","level":"INFO","msg":"sender: started","stream_id":"rtlrp9fx"}
+{"time":"2025-08-27T19:08:25.269633584+04:00","level":"INFO","msg":"writer: started","stream_id":"rtlrp9fx"}

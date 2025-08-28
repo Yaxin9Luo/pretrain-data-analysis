@@ -1,0 +1,111 @@
+_wandb:
+    value:
+        cli_version: 0.21.1
+        e:
+            w6voixlvc8iqia10s9d7asy1gm2rxvb0:
+                args:
+                    - --local_rank=0
+                    - config/train_gpt2_deepspeed_zero2.py
+                codePath: train_deepspeed.py
+                codePathLocal: train_deepspeed.py
+                email: s215161@dtu.dk
+                executable: /data/yaxin/pretrain_data_analysis/.venv/bin/python3
+                git:
+                    commit: 93a43d9a5c22450bbf06e78da2cb6eeef084b717
+                    remote: https://github.com/karpathy/nanoGPT.git
+                host: asus-ESC8000A-E12
+                os: Linux-6.8.0-65-generic-x86_64-with-glibc2.35
+                program: /data/yaxin/pretrain_data_analysis/train_deepspeed.py
+                python: CPython 3.11.12
+                root: /data/yaxin/pretrain_data_analysis
+                startedAt: "2025-08-27T15:36:45.954962Z"
+                writerId: w6voixlvc8iqia10s9d7asy1gm2rxvb0
+        m: []
+        python_version: 3.11.12
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+            "2":
+                - 1
+                - 11
+                - 49
+            "3":
+                - 13
+                - 16
+            "4": 3.11.12
+            "5": 0.21.1
+            "6": 4.55.4
+            "12": 0.21.1
+            "13": linux-x86_64
+DEEPSPEED_AVAILABLE:
+    value: true
+always_save_checkpoint:
+    value: true
+backend:
+    value: nccl
+batch_size:
+    value: 12
+beta1:
+    value: 0.9
+beta2:
+    value: 0.95
+bias:
+    value: false
+block_size:
+    value: 1024
+compile:
+    value: false
+dataset:
+    value: openwebtext
+decay_lr:
+    value: true
+device:
+    value: cuda
+dropout:
+    value: 0
+dtype:
+    value: bfloat16
+eval_interval:
+    value: 1000
+eval_iters:
+    value: 200
+eval_only:
+    value: false
+grad_clip:
+    value: 1
+gradient_accumulation_steps:
+    value: 40
+init_from:
+    value: scratch
+learning_rate:
+    value: 0.0006
+log_interval:
+    value: 10
+lr_decay_iters:
+    value: 600000
+max_iters:
+    value: 600000
+min_lr:
+    value: 6e-05
+n_embd:
+    value: 768
+n_head:
+    value: 12
+n_layer:
+    value: 12
+out_dir:
+    value: out
+use_deepspeed:
+    value: true
+wandb_log:
+    value: true
+wandb_project:
+    value: pretrain-data-analysis
+wandb_run_name:
+    value: gpt2-124M-deepspeed-zero2
+warmup_iters:
+    value: 2000
+weight_decay:
+    value: 0.1

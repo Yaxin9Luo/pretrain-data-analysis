@@ -1,0 +1,48 @@
+Traceback (most recent call last):
+  File "/data/yaxin/pretrain_data_analysis/train_deepspeed.py", line 407, in <module>
+    losses = estimate_loss()
+             ^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/train_deepspeed.py", line 356, in estimate_loss
+    outputs = model(X, Y)
+              ^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/utils/nvtx.py", line 20, in wrapped_fn
+    ret_val = func(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/runtime/engine.py", line 2127, in forward
+    validate_nested_autocast(self)
+  File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/runtime/torch_autocast.py", line 97, in validate_nested_autocast
+    raise AssertionError(
+AssertionError: torch.autocast is enabled outside DeepSpeed, but not in the DeepSpeed config. Please enable torch.autocast through the DeepSpeed config to ensure the correct communication dtype is used.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/train_deepspeed.py", line 407, in <module>
+[rank0]:     losses = estimate_loss()
+[rank0]:              ^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/train_deepspeed.py", line 356, in estimate_loss
+[rank0]:     outputs = model(X, Y)
+[rank0]:               ^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/utils/nvtx.py", line 20, in wrapped_fn
+[rank0]:     ret_val = func(*args, **kwargs)
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/runtime/engine.py", line 2127, in forward
+[rank0]:     validate_nested_autocast(self)
+[rank0]:   File "/data/yaxin/pretrain_data_analysis/.venv/lib/python3.11/site-packages/deepspeed/runtime/torch_autocast.py", line 97, in validate_nested_autocast
+[rank0]:     raise AssertionError(
+[rank0]: AssertionError: torch.autocast is enabled outside DeepSpeed, but not in the DeepSpeed config. Please enable torch.autocast through the DeepSpeed config to ensure the correct communication dtype is used.

@@ -1,0 +1,6 @@
+{"time":"2025-08-27T11:30:29.819083801+04:00","level":"INFO","msg":"stream: starting","core version":"0.21.1"}
+{"time":"2025-08-27T11:30:30.19160481+04:00","level":"INFO","msg":"stream: created new stream","id":"tuf1ag2d"}
+{"time":"2025-08-27T11:30:30.19163813+04:00","level":"INFO","msg":"stream: started","id":"tuf1ag2d"}
+{"time":"2025-08-27T11:30:30.191658431+04:00","level":"INFO","msg":"sender: started","stream_id":"tuf1ag2d"}
+{"time":"2025-08-27T11:30:30.191660164+04:00","level":"INFO","msg":"writer: started","stream_id":"tuf1ag2d"}
+{"time":"2025-08-27T11:30:30.191686994+04:00","level":"INFO","msg":"handler: started","stream_id":"tuf1ag2d"}
