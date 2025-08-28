@@ -1,0 +1,1 @@
+auh7-1b-gpu-303 slots=4

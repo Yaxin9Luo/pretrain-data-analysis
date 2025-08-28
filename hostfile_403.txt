@@ -1,0 +1,1 @@
+auh7-1b-gpu-304 slots=4

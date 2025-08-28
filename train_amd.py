@@ -1,15 +1,15 @@
 """
-Enhanced training script with DeepSpeed support for flexible parallel strategies.
-Supports both traditional DDP and various DeepSpeed parallelism modes.
+AMD GPU optimized training script for nanoGPT.
+This script is based on train.py but includes AMD-specific optimizations for ROCm.
 
-To run with DeepSpeed ZeRO-2 on 4 gpus:
-$ deepspeed --num_gpus=4 train_deepspeed.py --deepspeed_config=deepspeed_configs/zero2_config.json
+To run on a single AMD GPU:
+$ python train_amd.py --batch_size=32 --compile=False
 
-To run with DeepSpeed ZeRO-3 with CPU offloading:
-$ deepspeed --num_gpus=8 train_deepspeed.py --deepspeed_config=deepspeed_configs/zero3_offload_config.json
+To run with DDP on multiple AMD GPUs on 1 node:
+$ torchrun --standalone --nproc_per_node=4 train_amd.py
 
-To run traditional DDP (fallback):
-$ torchrun --standalone --nproc_per_node=4 train_deepspeed.py
+To run with DDP on AMD GPUs across multiple nodes (Slurm):
+$ sbatch slurm_multi_node.sbatch
 """
 
 import os
@@ -17,22 +17,43 @@ import time
 import math
 import pickle
 from contextlib import nullcontext
-import json
 
 import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
 
-try:
-    import deepspeed
-    from deepspeed.utils import logger as ds_logger
-    DEEPSPEED_AVAILABLE = True
-except ImportError:
-    DEEPSPEED_AVAILABLE = False
-    print("DeepSpeed not available, falling back to DDP mode")
-
 from model import GPTConfig, GPT
+
+# AMD GPU detection and optimization
+def setup_amd_optimizations():
+    """Setup AMD-specific optimizations"""
+    if torch.cuda.is_available():
+        # Check if we're using AMD GPUs (ROCm)
+        gpu_name = torch.cuda.get_device_name(0).lower()
+        if 'amd' in gpu_name or 'radeon' in gpu_name or 'gfx' in gpu_name:
+            print(f"✅ AMD GPU detected: {torch.cuda.get_device_name(0)}")
+            
+            # AMD-specific optimizations
+            os.environ.setdefault('HSA_FORCE_FINE_GRAIN_PCIE', '1')
+            os.environ.setdefault('HIP_FORCE_DEV_KERNARG', '1')
+            
+            # ROCm memory optimizations
+            torch.backends.cuda.matmul.allow_tf32 = False  # TF32 not available on AMD
+            torch.backends.cudnn.allow_tf32 = False
+            
+            # Enable ROCm optimizations
+            if hasattr(torch.backends.cuda, 'enable_flash_sdp'):
+                torch.backends.cuda.enable_flash_sdp(True)
+            
+            return True
+        else:
+            print(f"NVIDIA GPU detected: {torch.cuda.get_device_name(0)}")
+            # Keep NVIDIA optimizations
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+            return False
+    return False
 
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
@@ -44,8 +65,6 @@ eval_iters = 200
 eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
-resume_from_checkpoint = None # specific checkpoint file to resume from (e.g., 'ckpt_step_005000.pt'). If None, uses latest 'ckpt.pt'
-
 # wandb logging
 wandb_log = False # disabled by default
 wandb_project = 'owt'
@@ -74,60 +93,65 @@ warmup_iters = 2000 # how many steps to warm up for
 lr_decay_iters = 600000 # should be ~= max_iters per Chinchilla
 min_lr = 6e-5 # minimum learning rate, should be ~= learning_rate/10 per Chinchilla
 # DDP settings
-backend = 'rccl' if torch.cuda.is_available() and hasattr(torch.version, 'hip') else 'nccl' # Use RCCL for AMD GPUs
-# DeepSpeed settings
-deepspeed_config = None  # path to deepspeed config file
-use_deepspeed = False  # will be auto-detected
+backend = 'nccl' # 'nccl', 'gloo', etc.
 # system
 device = 'cuda' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1' etc., or try 'mps' on macbooks
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32', 'bfloat16', or 'float16', the latter will auto implement a GradScaler
-compile = True # use PyTorch 2.0 to compile the model to be faster
+compile = False # Disable compilation for AMD GPUs by default for better compatibility
 # -----------------------------------------------------------------------------
 config_keys = [k for k,v in globals().items() if not k.startswith('_') and isinstance(v, (int, float, bool, str))]
 exec(open('configurator.py').read()) # overrides from command line or config file
 config = {k: globals()[k] for k in config_keys} # will be useful for logging
-
-# Detect DeepSpeed usage
-use_deepspeed = DEEPSPEED_AVAILABLE and deepspeed_config is not None
-
 # -----------------------------------------------------------------------------
+
+# Setup AMD optimizations
+is_amd_gpu = setup_amd_optimizations()
 
 # various inits, derived attributes, I/O setup
 ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
-
-if ddp and not use_deepspeed:
-    # Traditional DDP setup
-    # Set NCCL timeout to a longer value (default is 10 minutes)
-    os.environ.setdefault('NCCL_TIMEOUT', '300')  # 5 minutes
-    # Enable NCCL debugging
-    os.environ.setdefault('NCCL_DEBUG', 'WARN')  # Less verbose for training
-    # Set socket timeout for better error handling
-    os.environ.setdefault('NCCL_SOCKET_TIMEOUT', '60')
+if ddp:
+    # Set NCCL timeout to a longer value for AMD GPUs
+    os.environ.setdefault('NCCL_TIMEOUT', '1800')  # 30 minutes for AMD
     
-    # NUMA-aware NCCL settings for dual-NUMA systems
-    os.environ.setdefault('NCCL_IB_DISABLE', '1')  # Disable InfiniBand
-    os.environ.setdefault('NCCL_P2P_DISABLE', '1')  # Disable P2P for stability
-    # Don't force socket interface - let NCCL auto-detect
-    os.environ.setdefault('NCCL_MIN_NCHANNELS', '2')  # Reduce for stability
-    os.environ.setdefault('NCCL_MAX_NCHANNELS', '4')
-    os.environ.setdefault('NCCL_BUFFSIZE', '2097152')  # 2MB buffer
-    os.environ.setdefault('NCCL_NTHREADS', '64')  # Reduce thread count
+    if is_amd_gpu:
+        # AMD-specific NCCL settings
+        os.environ.setdefault('NCCL_DEBUG', 'WARN')
+        os.environ.setdefault('NCCL_IB_DISABLE', '1')  # Disable InfiniBand
+        os.environ.setdefault('NCCL_P2P_DISABLE', '1')  # Disable P2P for stability
+        os.environ.setdefault('NCCL_MIN_NCHANNELS', '2')
+        os.environ.setdefault('NCCL_MAX_NCHANNELS', '4')
+        os.environ.setdefault('NCCL_BUFFSIZE', '2097152')  # 2MB buffer
+        os.environ.setdefault('NCCL_NTHREADS', '64')
+        
+        # ROCm-specific settings
+        os.environ.setdefault('HIP_VISIBLE_DEVICES', os.environ.get('CUDA_VISIBLE_DEVICES', '0,1,2,3,4,5,6,7'))
+    else:
+        # NVIDIA-specific NCCL settings
+        os.environ.setdefault('NCCL_DEBUG', 'WARN')
+        os.environ.setdefault('NCCL_IB_DISABLE', '1')
+        os.environ.setdefault('NCCL_P2P_DISABLE', '1')
     
     import datetime
-    init_process_group(backend=backend, timeout=datetime.timedelta(seconds=300))
+    init_process_group(backend=backend, timeout=datetime.timedelta(seconds=1800))
     ddp_rank = int(os.environ['RANK'])
     ddp_local_rank = int(os.environ['LOCAL_RANK'])
     ddp_world_size = int(os.environ['WORLD_SIZE'])
     device = f'cuda:{ddp_local_rank}'
     torch.cuda.set_device(device)
     
-    # Set CPU affinity for NUMA optimization
-    if ddp_local_rank < 4:
-        # GPUs 0-3 are on NUMA node 0
-        os.system(f"taskset -cp 0-31,64-95 {os.getpid()} 2>/dev/null")
-    else:
-        # GPUs 4-7 are on NUMA node 1  
-        os.system(f"taskset -cp 32-63,96-127 {os.getpid()} 2>/dev/null")
+    # CPU affinity optimization for NUMA systems
+    if 'SLURM_CPUS_PER_TASK' in os.environ:
+        cpus_per_task = int(os.environ['SLURM_CPUS_PER_TASK'])
+        if ddp_local_rank < 4:
+            # GPUs 0-3 on NUMA node 0
+            start_cpu = ddp_local_rank * (cpus_per_task // 4)
+            end_cpu = start_cpu + (cpus_per_task // 4) - 1
+            os.system(f"taskset -cp {start_cpu}-{end_cpu} {os.getpid()} 2>/dev/null")
+        else:
+            # GPUs 4-7 on NUMA node 1
+            start_cpu = (ddp_local_rank - 4) * (cpus_per_task // 4) + (cpus_per_task // 2)
+            end_cpu = start_cpu + (cpus_per_task // 4) - 1
+            os.system(f"taskset -cp {start_cpu}-{end_cpu} {os.getpid()} 2>/dev/null")
     
     master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
     seed_offset = ddp_rank # each process gets a different seed
@@ -135,52 +159,31 @@ if ddp and not use_deepspeed:
     # down the desired gradient accumulation iterations per process proportionally
     assert gradient_accumulation_steps % ddp_world_size == 0
     gradient_accumulation_steps //= ddp_world_size
-elif use_deepspeed:
-    # DeepSpeed will handle distributed setup
-    ddp_rank = int(os.environ.get('RANK', 0))
-    ddp_local_rank = int(os.environ.get('LOCAL_RANK', 0))
-    ddp_world_size = int(os.environ.get('WORLD_SIZE', 1))
-    device = f'cuda:{ddp_local_rank}'
-    torch.cuda.set_device(device)
-    master_process = ddp_rank == 0
-    seed_offset = ddp_rank
-    
-    # DeepSpeed handles gradient accumulation automatically
-    # but we need to read the config to understand what it's doing
-    with open(deepspeed_config, 'r') as f:
-        ds_config = json.load(f)
-    
-    # DeepSpeed will calculate these automatically if set to "auto"
-    if isinstance(ds_config.get('gradient_accumulation_steps'), str) and ds_config['gradient_accumulation_steps'] == "auto":
-        # Keep our current value for DeepSpeed to use
-        pass
-    else:
-        gradient_accumulation_steps = ds_config.get('gradient_accumulation_steps', gradient_accumulation_steps)
 else:
     # if not ddp, we are running on a single gpu, and one process
     master_process = True
     seed_offset = 0
     ddp_world_size = 1
     ddp_local_rank = 0  # Add this for non-DDP case
-    ddp_rank = 0
 
-# Calculate tokens per iteration
-if use_deepspeed:
-    # DeepSpeed handles the calculation, but we approximate for logging
-    tokens_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * block_size
-else:
-    tokens_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * block_size
-
+tokens_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * block_size
 print(f"tokens per iteration will be: {tokens_per_iter:,}")
 
 if master_process:
     os.makedirs(out_dir, exist_ok=True)
 torch.manual_seed(1337 + seed_offset)
-torch.backends.cuda.matmul.allow_tf32 = True # allow tf32 on matmul
-torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
+
 device_type = 'cuda' if 'cuda' in device else 'cpu' # for later use in torch.autocast
 # note: float16 data type will automatically use a GradScaler
 ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torch.float16}[dtype]
+
+# AMD GPUs may have issues with bfloat16, fallback to float16
+if is_amd_gpu and dtype == 'bfloat16':
+    if not torch.cuda.is_bf16_supported():
+        print("⚠️  AMD GPU doesn't support bfloat16, falling back to float16")
+        dtype = 'float16'
+        ptdtype = torch.float16
+
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
 
 # poor man's data loader
@@ -229,25 +232,8 @@ if init_from == 'scratch':
     model = GPT(gptconf)
 elif init_from == 'resume':
     print(f"Resuming training from {out_dir}")
-    
-    # List available checkpoints for user reference
-    if os.path.exists(out_dir):
-        available_checkpoints = [f for f in os.listdir(out_dir) if f.endswith('.pt')]
-        if available_checkpoints:
-            print(f"Available checkpoints: {', '.join(sorted(available_checkpoints))}")
-    
     # resume training from a checkpoint.
-    if resume_from_checkpoint is not None:
-        ckpt_filename = resume_from_checkpoint
-        ckpt_path = os.path.join(out_dir, ckpt_filename)
-        print(f"Resuming from specific checkpoint: {ckpt_filename}")
-    else:
-        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-        print("Resuming from latest checkpoint: ckpt.pt")
-    
-    if not os.path.exists(ckpt_path):
-        raise FileNotFoundError(f"Checkpoint file not found: {ckpt_path}")
-    
+    ckpt_path = os.path.join(out_dir, 'ckpt.pt')
     checkpoint = torch.load(ckpt_path, map_location=device)
     checkpoint_model_args = checkpoint['model_args']
     # force these config attributes to be equal otherwise we can't even resume training
@@ -275,127 +261,53 @@ elif init_from.startswith('gpt2'):
     # read off the created config params, so we can store them into checkpoint correctly
     for k in ['n_layer', 'n_head', 'n_embd', 'block_size', 'bias', 'vocab_size']:
         model_args[k] = getattr(model.config, k)
-
 # crop down the model block size if desired, using model surgery
 if block_size < model.config.block_size:
     model.crop_block_size(block_size)
     model_args['block_size'] = block_size # so that the checkpoint will have the right value
+model.to(device)
 
-# Initialize DeepSpeed or traditional setup
-if use_deepspeed:
-    print(f"Initializing DeepSpeed with config: {deepspeed_config}")
-    
-    # Load DeepSpeed config
-    with open(deepspeed_config, 'r') as f:
-        ds_config = json.load(f)
-    
-    # Update DeepSpeed config with our parameters
-    ds_config['train_micro_batch_size_per_gpu'] = batch_size
-    ds_config['gradient_accumulation_steps'] = gradient_accumulation_steps
-    
-    # Calculate and set train_batch_size
-    train_batch_size = batch_size * gradient_accumulation_steps * ddp_world_size
-    ds_config['train_batch_size'] = train_batch_size
-    
-    # Update optimizer parameters
-    if 'optimizer' in ds_config and ds_config['optimizer'].get('params'):
-        if 'lr' in ds_config['optimizer']['params'] and ds_config['optimizer']['params']['lr'] == "auto":
-            ds_config['optimizer']['params']['lr'] = learning_rate
-        if 'betas' in ds_config['optimizer']['params'] and ds_config['optimizer']['params']['betas'] == "auto":
-            ds_config['optimizer']['params']['betas'] = [beta1, beta2]
-        if 'weight_decay' in ds_config['optimizer']['params'] and ds_config['optimizer']['params']['weight_decay'] == "auto":
-            ds_config['optimizer']['params']['weight_decay'] = weight_decay
-    
-    # Note: We handle learning rate scheduling manually in the training loop
-    # instead of using DeepSpeed's built-in scheduler for better control
-    
-    # Update gradient clipping
-    if 'gradient_clipping' in ds_config and ds_config['gradient_clipping'] == "auto":
-        ds_config['gradient_clipping'] = grad_clip
-    
-    # Initialize DeepSpeed engine
-    model_engine, optimizer, _, scheduler = deepspeed.initialize(
-        model=model,
-        config=ds_config,
-        model_parameters=model.parameters()
-    )
-    
-    model = model_engine
-    # DeepSpeed handles compilation internally, so we disable it
-    compile = False
-    
-    print("DeepSpeed initialization complete")
-    
-    # Check if FlashAttention is being used
-    flash_attention_enabled = hasattr(torch.nn.functional, 'scaled_dot_product_attention')
-    if flash_attention_enabled:
-        print("✅ FlashAttention: Using PyTorch's scaled_dot_product_attention (Flash Attention)")
-    else:
-        print("⚠️  FlashAttention: Using manual attention implementation (slower)")
-    
-    # Additional FlashAttention info
-    if hasattr(model_engine.module.transformer.h[0].attn, 'flash'):
-        print(f"   Model attention flash flag: {model_engine.module.transformer.h[0].attn.flash}")
-    
-    print(f"   PyTorch version: {torch.__version__}")
-    print(f"   CUDA available: {torch.cuda.is_available()}")
-    if torch.cuda.is_available():
-        print(f"   CUDA version: {torch.version.cuda}")
-        print(f"   GPU: {torch.cuda.get_device_name()}")
-    
-else:
-    # Traditional setup
-    model.to(device)
-    
-    # initialize a GradScaler. If enabled=False scaler is a no-op
-    scaler = torch.cuda.amp.GradScaler(enabled=(dtype == 'float16'))
-    
-    # optimizer
-    optimizer = model.configure_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
-    if init_from == 'resume':
-        optimizer.load_state_dict(checkpoint['optimizer'])
-    
-    # compile the model
-    if compile:
-        print("compiling the model... (takes a ~minute)")
-        unoptimized_model = model
-        model = torch.compile(model) # requires PyTorch 2.0
-    
-    # wrap model into DDP container
-    if ddp:
-        if master_process:
-            print("Wrapping model with DDP...")
-        
-        # Use find_unused_parameters=True to avoid hanging if some parameters aren't used
-        # Set broadcast_buffers=True to sync batch norm buffers
-        model = DDP(model, device_ids=[ddp_local_rank], 
-                    find_unused_parameters=False, 
-                    broadcast_buffers=True)
-        
-        if master_process:
-            print("DDP model wrapping complete")
-    
-    # Check if FlashAttention is being used (for traditional training)
-    if master_process:
-        flash_attention_enabled = hasattr(torch.nn.functional, 'scaled_dot_product_attention')
-        if flash_attention_enabled:
-            print("✅ FlashAttention: Using PyTorch's scaled_dot_product_attention (Flash Attention)")
-        else:
-            print("⚠️  FlashAttention: Using manual attention implementation (slower)")
-        
-        # Additional FlashAttention info
-        # Access the underlying model (unwrap DDP if needed)
-        underlying_model = model.module if hasattr(model, 'module') else model
-        if hasattr(underlying_model.transformer.h[0].attn, 'flash'):
-            print(f"   Model attention flash flag: {underlying_model.transformer.h[0].attn.flash}")
-        
-        print(f"   PyTorch version: {torch.__version__}")
-        print(f"   CUDA available: {torch.cuda.is_available()}")
-        if torch.cuda.is_available():
-            print(f"   CUDA version: {torch.version.cuda}")
-            print(f"   GPU: {torch.cuda.get_device_name()}")
+# initialize a GradScaler. If enabled=False scaler is a no-op
+scaler = torch.cuda.amp.GradScaler(enabled=(dtype == 'float16'))
 
+# optimizer
+optimizer = model.configure_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
+if init_from == 'resume':
+    optimizer.load_state_dict(checkpoint['optimizer'])
 checkpoint = None # free up memory
+
+# compile the model (disabled by default for AMD compatibility)
+if compile and not is_amd_gpu:
+    print("compiling the model... (takes a ~minute)")
+    unoptimized_model = model
+    model = torch.compile(model) # requires PyTorch 2.0
+elif compile and is_amd_gpu:
+    print("⚠️  Model compilation disabled for AMD GPU compatibility")
+
+# wrap model into DDP container
+if ddp:
+    if master_process:
+        print("Wrapping model with DDP...")
+    
+    model = DDP(model, device_ids=[ddp_local_rank], 
+                find_unused_parameters=False, 
+                broadcast_buffers=True)
+    
+    if master_process:
+        print("DDP model wrapping complete")
+
+# Print system information
+if master_process:
+    print(f"=== System Information ===")
+    print(f"Device: {device}")
+    print(f"GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A'}")
+    print(f"AMD GPU: {is_amd_gpu}")
+    print(f"PyTorch version: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"CUDA version: {torch.version.cuda}")
+    print(f"Compile enabled: {compile}")
+    print(f"Mixed precision: {dtype}")
 
 # helps estimate an arbitrarily accurate loss over either split using many batches
 @torch.no_grad()
@@ -406,14 +318,8 @@ def estimate_loss():
         losses = torch.zeros(eval_iters)
         for k in range(eval_iters):
             X, Y = get_batch(split)
-            if use_deepspeed:
-                # DeepSpeed engine handles forward pass and autocast internally
-                outputs = model(X, Y)
-                loss = outputs[1] if isinstance(outputs, tuple) else outputs
-            else:
-                # Traditional training with manual autocast
-                with ctx:
-                    logits, loss = model(X, Y)
+            with ctx:
+                logits, loss = model(X, Y)
             losses[k] = loss.item()
         out[split] = losses.mean()
     model.train()
@@ -443,21 +349,14 @@ X, Y = get_batch('train') # fetch the very first batch
 t0 = time.time()
 training_start_time = time.time()  # Track overall training start time
 local_iter_num = 0 # number of iterations in the lifetime of this process
-raw_model = model.module if (ddp and not use_deepspeed) else (model.module if hasattr(model, 'module') else model) # unwrap DDP/DeepSpeed container if needed
+raw_model = model.module if ddp else model # unwrap DDP container if needed
 running_mfu = -1.0
-
 while True:
+
     # determine and set the learning rate for this iteration
     lr = get_lr(iter_num) if decay_lr else learning_rate
-    
-    if not use_deepspeed:
-        # Traditional PyTorch optimizer
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = lr
-    else:
-        # DeepSpeed optimizer - manually set learning rate
-        for param_group in model.optimizer.param_groups:
-            param_group['lr'] = lr
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
 
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
@@ -512,59 +411,42 @@ while True:
             if iter_num > 0:
                 checkpoint = {
                     'model': raw_model.state_dict(),
-                    'optimizer': optimizer.state_dict() if not use_deepspeed else None,
+                    'optimizer': optimizer.state_dict(),
                     'model_args': model_args,
                     'iter_num': iter_num,
                     'best_val_loss': best_val_loss,
                     'config': config,
                 }
-                # Save checkpoint with iteration step in filename
-                ckpt_filename = f'ckpt_step_{iter_num:06d}.pt'
-                ckpt_path = os.path.join(out_dir, ckpt_filename)
-                print(f"saving checkpoint to {ckpt_path}")
-                # Always use traditional PyTorch saving (faster than DeepSpeed's method)
-                torch.save(checkpoint, ckpt_path)
-                
-                # Also save as latest checkpoint for easy resuming
-                latest_ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                torch.save(checkpoint, latest_ckpt_path)
-                print(f"saved latest checkpoint as {latest_ckpt_path}")
+                print(f"saving checkpoint to {out_dir}")
+                torch.save(checkpoint, os.path.join(out_dir, 'ckpt.pt'))
     if iter_num == 0 and eval_only:
         break
 
     # forward backward update, with optional gradient accumulation to simulate larger batch size
-    if use_deepspeed:
-        # DeepSpeed training step
-        loss = model(X, Y)[1] if isinstance(model(X, Y), tuple) else model(X, Y)
-        model.backward(loss)
-        model.step()
+    # and using the GradScaler if data type is float16
+    for micro_step in range(gradient_accumulation_steps):
+        if ddp:
+            # in DDP training we only need to sync gradients at the last micro step.
+            # the official way to do this is with model.no_sync() context manager, but
+            # I really dislike that this bloats the code and forces us to repeat code
+            # looking at the source of that context manager, it just toggles this variable
+            model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
+        with ctx:
+            logits, loss = model(X, Y)
+            loss = loss / gradient_accumulation_steps # scale the loss to account for gradient accumulation
         # immediately async prefetch next batch while model is doing the forward pass on the GPU
         X, Y = get_batch('train')
-    else:
-        # Traditional training loop with gradient accumulation
-        for micro_step in range(gradient_accumulation_steps):
-            if ddp:
-                # in DDP training we only need to sync gradients at the last micro step.
-                # the official way to do this is with model.no_sync() context manager, but
-                # I really dislike that this bloats the code and forces us to repeat code
-                # looking at the source of that context manager, it just toggles this variable
-                model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
-            with ctx:
-                logits, loss = model(X, Y)
-                loss = loss / gradient_accumulation_steps # scale the loss to account for gradient accumulation
-            # immediately async prefetch next batch while model is doing the forward pass on the GPU
-            X, Y = get_batch('train')
-            # backward pass, with gradient scaling if training in fp16
-            scaler.scale(loss).backward()
-        # clip the gradient
-        if grad_clip != 0.0:
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-        # step the optimizer and scaler if training in fp16
-        scaler.step(optimizer)
-        scaler.update()
-        # flush the gradients as soon as we can, no need for this memory anymore
-        optimizer.zero_grad(set_to_none=True)
+        # backward pass, with gradient scaling if training in fp16
+        scaler.scale(loss).backward()
+    # clip the gradient
+    if grad_clip != 0.0:
+        scaler.unscale_(optimizer)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+    # step the optimizer and scaler if training in fp16
+    scaler.step(optimizer)
+    scaler.update()
+    # flush the gradients as soon as we can, no need for this memory anymore
+    optimizer.zero_grad(set_to_none=True)
 
     # timing and logging
     t1 = time.time()
@@ -573,16 +455,10 @@ while True:
     if iter_num % log_interval == 0 and master_process:
         # get loss as float. note: this is a CPU-GPU sync point
         # scale up to undo the division above, approximating the true total loss (exact would have been a sum)
-        if use_deepspeed:
-            # For DeepSpeed, loss is already scaled properly
-            lossf = loss.item()
-        else:
-            lossf = loss.item() * gradient_accumulation_steps
-        
+        lossf = loss.item() * gradient_accumulation_steps
         if local_iter_num >= 5: # let the training loop settle a bit
-            if not use_deepspeed:
-                mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
-                running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
+            mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
+            running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
         
         # Calculate time estimation
         elapsed_time = time.time() - training_start_time
@@ -610,11 +486,7 @@ while True:
             
             time_str = f"{time_str}, progress: {progress_pct:.1f}%"
         
-        if use_deepspeed:
-            print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms{time_str}")
-        else:
-            print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%{time_str}")
-    
+        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%{time_str}")
     iter_num += 1
     local_iter_num += 1
 
@@ -622,5 +494,5 @@ while True:
     if iter_num > max_iters:
         break
 
-if ddp and not use_deepspeed:
+if ddp:
     destroy_process_group()

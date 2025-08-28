@@ -1,0 +1,18 @@
+# Core dependencies for nanoGPT training
+
+numpy
+transformers
+datasets
+tiktoken
+tqdm
+
+# Optional but recommended
+wandb
+
+# For DeepSpeed support (optional)
+deepspeed
+
+# For AMD GPU support (ROCm)
+# Note: Install PyTorch with ROCm support from official AMD repository
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.4.2
+

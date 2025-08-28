@@ -1,0 +1,8 @@
+wandb: Currently logged in as: s215161 (mlpos_group18) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: creating run
+wandb: Tracking run with wandb version 0.21.1
+wandb: Run data is saved locally in /vast/users/zhiqiang.shen/yaxin/pretrain-data-analysis/wandb/run-20250828_094014-3nzh4ga0
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run gpt2-124M-deepspeed-zero2-20pct
+wandb: ⭐️ View project at https://wandb.ai/mlpos_group18/pretrain-data-analysis
+wandb: 🚀 View run at https://wandb.ai/mlpos_group18/pretrain-data-analysis/runs/3nzh4ga0

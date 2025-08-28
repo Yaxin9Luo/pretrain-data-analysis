@@ -1,0 +1,24 @@
+step 0: train loss 11.0000, val loss 11.0000
+iter 0: loss 11.0000, time 96931.16ms
+iter 10: loss 11.0000, time 666.95ms, ETA: 4d 19h, progress: 0.0%
+iter 20: loss 11.0000, time 620.36ms, ETA: 2d 13h, progress: 0.1%
+iter 30: loss 11.0000, time 649.03ms, ETA: 1d 19h, progress: 0.1%
+iter 40: loss 10.5625, time 642.83ms, ETA: 1d 10h, progress: 0.1%
+iter 50: loss 10.5625, time 688.92ms, ETA: 1d 5h, progress: 0.1%
+iter 60: loss 10.5625, time 652.00ms, ETA: 1d 1h, progress: 0.1%
+iter 70: loss 10.5625, time 691.36ms, ETA: 22h 53m, progress: 0.2%
+iter 80: loss 10.0625, time 731.61ms, ETA: 20h 58m, progress: 0.2%
+iter 90: loss 10.0625, time 672.98ms, ETA: 19h 29m, progress: 0.2%
+iter 100: loss 10.1250, time 740.41ms, ETA: 18h 18m, progress: 0.2%
+iter 110: loss 10.0625, time 692.04ms, ETA: 17h 19m, progress: 0.3%
+iter 120: loss 9.7500, time 692.03ms, ETA: 16h 30m, progress: 0.3%
+iter 130: loss 9.7500, time 681.21ms, ETA: 15h 48m, progress: 0.3%
+iter 140: loss 9.8125, time 696.44ms, ETA: 15h 13m, progress: 0.4%
+iter 150: loss 9.7500, time 685.89ms, ETA: 14h 42m, progress: 0.4%
+iter 160: loss 9.6250, time 686.95ms, ETA: 14h 16m, progress: 0.4%
+iter 170: loss 9.6250, time 706.18ms, ETA: 13h 52m, progress: 0.4%
+iter 180: loss 9.6250, time 664.75ms, ETA: 13h 31m, progress: 0.4%
+iter 190: loss 9.6250, time 685.15ms, ETA: 13h 12m, progress: 0.5%
+iter 200: loss 9.5000, time 720.25ms, ETA: 12h 56m, progress: 0.5%
+iter 210: loss 9.5000, time 687.97ms, ETA: 12h 40m, progress: 0.5%
+iter 220: loss 9.5000, time 686.63ms, ETA: 12h 26m, progress: 0.5%

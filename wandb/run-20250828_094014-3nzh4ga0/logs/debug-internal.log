@@ -1,0 +1,7 @@
+{"time":"2025-08-28T09:40:14.639175576Z","level":"INFO","msg":"stream: starting","core version":"0.21.1"}
+{"time":"2025-08-28T09:40:19.756484206Z","level":"ERROR","msg":"monitor: failed to initialize GPU resource: monitor: could not get GPU binary port: timeout reading portfile /tmp/wandb-system-monitor-portfile-2002217164"}
+{"time":"2025-08-28T09:40:20.094594938Z","level":"INFO","msg":"stream: created new stream","id":"3nzh4ga0"}
+{"time":"2025-08-28T09:40:20.094634458Z","level":"INFO","msg":"stream: started","id":"3nzh4ga0"}
+{"time":"2025-08-28T09:40:20.094690399Z","level":"INFO","msg":"writer: started","stream_id":"3nzh4ga0"}
+{"time":"2025-08-28T09:40:20.104197372Z","level":"INFO","msg":"handler: started","stream_id":"3nzh4ga0"}
+{"time":"2025-08-28T09:40:20.104817949Z","level":"INFO","msg":"sender: started","stream_id":"3nzh4ga0"}

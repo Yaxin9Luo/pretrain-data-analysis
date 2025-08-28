@@ -1,0 +1,74 @@
+{
+  "os": "Linux-5.15.0-140-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.11.13",
+  "startedAt": "2025-08-28T09:32:46.810025Z",
+  "args": [
+    "--local_rank=0",
+    "--backend=rccl",
+    "config/train_gpt2_deepspeed_zero2.py"
+  ],
+  "program": "/vast/users/zhiqiang.shen/yaxin/pretrain-data-analysis/train_deepspeed.py",
+  "codePath": "train_deepspeed.py",
+  "codePathLocal": "train_deepspeed.py",
+  "git": {
+    "remote": "https://github.com/Yaxin9Luo/pretrain-data-analysis.git",
+    "commit": "bda4588f09ea9de7cdf29984b207d07ea1cfb91b"
+  },
+  "email": "s215161@dtu.dk",
+  "root": "/vast/users/zhiqiang.shen/yaxin/pretrain-data-analysis",
+  "host": "auh7-1b-gpu-303",
+  "executable": "/vast/users/zhiqiang.shen/miniconda3/envs/data_analysis/bin/python3.11",
+  "cpu_count": 64,
+  "cpu_count_logical": 128,
+  "disk": {
+    "/": {
+      "total": "470343073792",
+      "used": "49927909376"
+    }
+  },
+  "memory": {
+    "total": "2434606931968"
+  },
+  "slurm": {
+    "cluster_name": "ai-04r",
+    "conf": "/etc/slurm/slurm.conf",
+    "cpus_on_node": "64",
+    "cpus_per_task": "8",
+    "gpus_on_node": "8",
+    "gtids": "0",
+    "job_account": "faculty-acc",
+    "job_cpus_per_node": "64",
+    "job_end_time": "1756632670",
+    "job_gid": "2000",
+    "job_gpus": "0,1,2,3,4,5,6,7",
+    "job_id": "402",
+    "job_name": "lentdd",
+    "job_nodelist": "auh7-1b-gpu-303",
+    "job_num_nodes": "1",
+    "job_partition": "faculty",
+    "job_qos": "gtqos",
+    "job_start_time": "1756373470",
+    "job_uid": "2010",
+    "job_user": "zhiqiang.shen",
+    "jobid": "402",
+    "localid": "0",
+    "mem_per_node": "122880",
+    "nnodes": "1",
+    "nodeid": "0",
+    "nodelist": "auh7-1b-gpu-303",
+    "nprocs": "8",
+    "ntasks": "8",
+    "ntasks_per_node": "8",
+    "oom_kill_step": "0",
+    "prio_process": "0",
+    "procid": "0",
+    "submit_dir": "/vast/users/zhiqiang.shen/yaxin/pretrain-data-analysis",
+    "submit_host": "auh-1b-cpu-login-001",
+    "task_pid": "1324134",
+    "tasks_per_node": "8",
+    "topology_addr": "auh7-1b-gpu-303",
+    "topology_addr_pattern": "node",
+    "tres_per_task": "cpu=8"
+  },
+  "writerId": "2lm5kqdgxr4rausegrule9rhphw32b7q"
+}
